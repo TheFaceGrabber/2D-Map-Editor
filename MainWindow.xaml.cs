@@ -49,7 +49,24 @@ namespace WpfApp1
         public float Size { get; set; } = 1;
 
         [Category("Information")]
-        public string Image { get; set; }
+        [DisplayName("Texture Location")]
+        [Description("Location of the texture to be used when displaying this entity - relative to the game directory")]
+        [Editor(typeof(ImageEditor), typeof(ImageEditor))]
+        public string Image
+        {
+            get { return path; }
+            set
+            {
+                path = value;
+                Source = new BitmapImage(new Uri(value, UriKind.Relative));
+            }
+        }
+
+        [JsonIgnore]
+        public BitmapImage Source;
+
+        string path = "";
+
     }
 
     [System.Serializable]
@@ -151,22 +168,6 @@ namespace WpfApp1
             Init();
         }
 
-        public void UpdateCanvas()
-        {
-            MainCanvas.Width = CurrentLevel.LevelSize * ImageCanvas.GRIDSIZE;
-            MainCanvas.Height = CurrentLevel.LevelSize * ImageCanvas.GRIDSIZE + (2 * ImageCanvas.GRIDSIZE);
-
-            for (int i = 0; i < CurrentLevel.LevelSize; i++)
-            {
-                for (int y = 0; y < CurrentLevel.LevelSize; y++)
-                {
-                    MainCanvas.Images.Add(new LevelImage("Images/Grid.png", new Point(i, y)));
-                }
-            }
-
-            MainCanvas.Update(CurrentLevel);
-        }
-
         public void Init()
         {
             ProjectTreeView.SelectedItemChanged += ProjectTreeView_SelectedItemChanged;
@@ -237,6 +238,49 @@ namespace WpfApp1
             PropGrid.KeyDown += PropGrid_KeyDown;
         }
 
+        #region Public Methods
+
+        public void UpdateCanvas()
+        {
+            MainCanvas.Width = CurrentLevel.LevelSize * ImageCanvas.GRIDSIZE;
+            MainCanvas.Height = CurrentLevel.LevelSize * ImageCanvas.GRIDSIZE + (2 * ImageCanvas.GRIDSIZE);
+
+            for (int i = 0; i < CurrentLevel.LevelSize; i++)
+            {
+                for (int y = 0; y < CurrentLevel.LevelSize; y++)
+                {
+                    MainCanvas.Images.Add(new LevelImage("Images/Grid.png", new Point(i, y)));
+                }
+            }
+
+            MainCanvas.Update(CurrentLevel);
+        }
+
+        public void UpdateBlocks()
+        {
+            foreach (var item in Blocks.Items)
+            {
+                if (item is TreeViewWithIcons tree)
+                {
+                    tree.HeaderText = CurrentLevel.Blocks[Blocks.Items.IndexOf(item)].Name;
+                }
+            }
+        }
+
+        public void UpdateEntities()
+        {
+            foreach (var item in Entities.Items)
+            {
+                if (item is TreeViewWithIcons tree)
+                {
+                    tree.HeaderText = CurrentLevel.Entities[Entities.Items.IndexOf(item)].Name;
+                }
+            }
+        }
+
+        #endregion
+
+        #region App Events
 
         private void PropGrid_KeyDown(object sender, KeyEventArgs e)
         {
@@ -276,28 +320,6 @@ namespace WpfApp1
             else
             {
                 PropGrid.SelectedObject = null;
-            }
-        }
-
-        public void UpdateBlocks()
-        {
-            foreach (var item in Blocks.Items)
-            {
-                if(item is TreeViewWithIcons tree)
-                {
-                    tree.HeaderText = CurrentLevel.Blocks[Blocks.Items.IndexOf(item)].Name;
-                }
-            }
-        }
-
-        public void UpdateEntities()
-        {
-            foreach (var item in Entities.Items)
-            {
-                if (item is TreeViewWithIcons tree)
-                {
-                    tree.HeaderText = CurrentLevel.Entities[Entities.Items.IndexOf(item)].Name;
-                }
             }
         }
 
@@ -550,5 +572,7 @@ namespace WpfApp1
                 SaveAsItem_Click(sender, null);
             }
         }
+
+        #endregion
     }
 }
