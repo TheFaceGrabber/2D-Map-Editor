@@ -236,9 +236,33 @@ namespace WpfApp1
 
             PropGrid.LostFocus += PropGrid_LostFocus;
             PropGrid.KeyDown += PropGrid_KeyDown;
+
         }
 
         #region Public Methods
+
+        public void OpenItem(string path)
+        {
+            if (File.Exists(path))
+            {
+                Mouse.OverrideCursor = Cursors.Wait;
+                var op = File.ReadAllText(path);
+
+                CurrentLevel = JsonConvert.DeserializeObject<Level>(op);
+                Entities.IsExpanded = false;
+                Blocks.IsExpanded = false;
+
+                Entities_Collapsed(null, null);
+                Blocks_Collapsed(null, null);
+                FileDirectory = path;
+                Mouse.OverrideCursor = null;
+                UpdateCanvas();
+            }
+            else
+            {
+                MessageBox.Show("Failed to open file at " + path + "!", "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
 
         public void UpdateCanvas()
         {
@@ -497,20 +521,8 @@ namespace WpfApp1
 
             if (r == true)
             {
-                Mouse.OverrideCursor = Cursors.Wait;
                 var loc = sld.FileName;
-
-                var op = File.ReadAllText(loc);
-
-                CurrentLevel = JsonConvert.DeserializeObject<Level>(op);
-                Entities.IsExpanded = false;
-                Blocks.IsExpanded = false;
-
-                Entities_Collapsed(null, null);
-                Blocks_Collapsed(null, null);
-                FileDirectory = loc;
-                Mouse.OverrideCursor = null;
-                UpdateCanvas();
+                OpenItem(loc);
             }
             else
             {
