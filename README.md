@@ -1,1 +1,1 @@
-A simple 2D amp editor that uses a grid, blocks and entities. 
+A simple 2D map editor that uses a grid, blocks and entities. 
