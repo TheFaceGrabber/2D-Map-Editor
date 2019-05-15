@@ -116,6 +116,7 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <None Include="Level Classes\Level.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -165,6 +166,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Grid.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Level Classes\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
